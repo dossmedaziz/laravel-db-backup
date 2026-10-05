@@ -33,16 +33,16 @@ return [
     */
 
     'dump' => [
-        'path' => env('DB_BACKUP_PATH', storage_path('app/db-backups')),
+        'path' => storage_path('app/db-backups'),
         'filename_format' => 'Y-m-d-H-i',
-        'prefix' => env('DB_BACKUP_PREFIX', env('APP_NAME', 'laravel')),
-        'delete_local' => env('DB_BACKUP_DELETE_LOCAL', false),
+        'prefix' => env('APP_NAME', 'laravel'),
+        'delete_local' => false,
         'timeout' => 3600,
 
         // Full path to the binaries if they are not on the PATH.
         'binaries' => [
-            'pg_dump' => env('DB_BACKUP_PG_DUMP', 'pg_dump'),
-            'mysqldump' => env('DB_BACKUP_MYSQLDUMP', 'mysqldump'),
+            'pg_dump' => 'pg_dump',
+            'mysqldump' => 'mysqldump',
         ],
 
         // Extra arguments appended to the dump command.
@@ -58,10 +58,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Comma-separated list of destination names (keys of "destinations"
-    | below). The dump is uploaded to every one of them, e.g.
-    |
-    |   DB_BACKUP_DESTINATIONS=google
-    |   DB_BACKUP_DESTINATIONS=google,s3
+    | below). The zip is uploaded to every one of them.
     |
     */
 
@@ -72,18 +69,7 @@ return [
     | Destinations
     |--------------------------------------------------------------------------
     |
-    | Each destination has a "driver". Built-in drivers:
-    |
-    |  - google: Google Drive (service account or OAuth).
-    |  - disk:   any Laravel filesystem disk from config/filesystems.php
-    |            (local, s3, ftp, sftp, ...).
-    |
-    | Register your own driver in a service provider:
-    |
-    |   app(\Doss\DbBackup\DestinationManager::class)->extend('dropbox',
-    |       fn (array $config) => new DropboxDestination($config));
-    |
-    | Your class must implement \Doss\DbBackup\Contracts\Destination.
+    | Each destination has a "driver". Supported driver: google (Google Drive).
     |
     */
 
@@ -101,23 +87,11 @@ return [
             'folder_id' => env('DB_BACKUP_GOOGLE_FOLDER_ID'),
 
             'service_account_json' => env('DB_BACKUP_GOOGLE_SERVICE_ACCOUNT', storage_path('app/google/credentials.json')),
-            'oauth_client_json' => env('DB_BACKUP_GOOGLE_OAUTH_CLIENT', storage_path('app/google/client_secret.json')),
-            'oauth_token_json' => env('DB_BACKUP_GOOGLE_OAUTH_TOKEN', storage_path('app/google/token.json')),
+            'oauth_client_json' => storage_path('app/google/client_secret.json'),
+            'oauth_token_json' => storage_path('app/google/token.json'),
 
             'application_name' => env('APP_NAME', 'Laravel DB Backup'),
             'chunk_size' => 8 * 1024 * 1024,
-        ],
-
-        's3' => [
-            'driver' => 'disk',
-            'disk' => env('DB_BACKUP_S3_DISK', 's3'),
-            'path' => env('DB_BACKUP_S3_PATH', 'db-backups'),
-        ],
-
-        'local' => [
-            'driver' => 'disk',
-            'disk' => env('DB_BACKUP_LOCAL_DISK', 'local'),
-            'path' => env('DB_BACKUP_LOCAL_PATH', 'db-backups-archive'),
         ],
 
     ],
